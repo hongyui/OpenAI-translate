@@ -1,24 +1,21 @@
 name: Snyk Security Scan
 
-on: [pull_request]
+on:
+  pull_request:
+    branches: [ main ]
 
 jobs:
   snyk:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
+    - name: Checkout PR branch
       uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
 
-    - name: Install Snyk CLI
-      run: npm install -g snyk
-
-    - name: Snyk Auth
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/node@master
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      run: snyk auth "$SNYK_TOKEN"
-
-    - name: Run Snyk Code Test
-      run: snyk test --code
-
-    - name: Monitor Project
-      run: snyk monitor
+      with:
+        command: test
