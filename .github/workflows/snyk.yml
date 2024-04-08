@@ -13,9 +13,14 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/node@master
+
+    - name: Install Snyk CLI
+      run: npm install -g snyk
+
+    - name: Snyk Auth
       env:
         SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        command: test
+      run: snyk auth "$SNYK_TOKEN"
+
+    - name: Run Snyk Code Test
+      run: snyk code test 
